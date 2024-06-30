@@ -1,0 +1,9 @@
+$containerWidth: $maxWidthContainer + $containerPadding;
+
+$pc: em($containerWidth);
+$tablet-xl: em(1640);
+$tablet-l: em(1500);
+$tablet: em(991.98);
+$mobile: em(767.98);
+$mobile-mid: em(559.98);
+$mobileSmall: em(479.98);

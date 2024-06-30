@@ -1,0 +1,60 @@
+stages:
+  #  - old_develop
+  #  - old_deploy
+  - build
+  - package
+  - deploy
+
+.build:
+  script:
+    - echo "Compiling the code..."
+    - docker build -t $REGISTRY_IMAGE:$REGISTRY_TAG .
+    - echo "Compile complete."
+
+
+.package:
+  script:
+    - echo "Package application..."
+    - docker tag $REGISTRY_IMAGE:$REGISTRY_TAG $REGISTRY_IMAGE:latest
+    - echo "Application successfully package."
+
+
+.deploy:
+  script:
+    - echo "Deploying application..."
+    - docker service update --force --image $REGISTRY_IMAGE:latest $SWARM_SERVICE
+    - echo "Application successfully deployed."
+
+
+build_front:
+  extends: .build
+  variables:
+    REGISTRY_IMAGE: nfm-front
+    REGISTRY_TAG: $CI_COMMIT_SHORT_SHA
+  stage: build
+  only:
+    - main
+  tags:
+    - nfm-front
+
+package_front:
+  extends: .package
+  stage: package
+  variables:
+    REGISTRY_IMAGE: nfm-front
+    REGISTRY_TAG: $CI_COMMIT_SHORT_SHA
+  only:
+    - main
+  tags:
+    - nfm-front
+
+deploy_front:
+  extends: .deploy
+  stage: deploy
+  variables:
+    REGISTRY_IMAGE: nfm-front
+    SWARM_SERVICE: nfm_front
+  only:
+    - main
+  tags:
+    - nfm-front
